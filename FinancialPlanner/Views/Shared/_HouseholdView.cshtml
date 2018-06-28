@@ -1,0 +1,14 @@
+﻿@model FinancialPlanner.Models.ApplicationUser
+
+@{
+    Layout = null;
+}
+
+@if (Model.HouseholdId == null)
+{
+    <li><a href="@Url.Action("Create", "Households")">Create Household</a></li>
+}
+else
+{
+    <li><a href="@Url.Action("Details", "Households")">Your Household</a></li>
+}

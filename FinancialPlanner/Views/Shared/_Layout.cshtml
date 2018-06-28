@@ -41,18 +41,13 @@
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="about.html">About</a></li>
-                        <li><a href="services.html">services</a></li>
-                        <li><a href="gallery.html">Gallery</a></li>
-                        <li>
-                            <a href="icons.html" data-toggle="dropdown">Short Codes<span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="icons.html">Icons</a></li>
-                                <li><a href="typography.html">Typograpghy</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="contact.html">Contact Us</a></li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+                            <li><a href="@Url.Action("Index", "JoinNotifications")">Invites</a></li>
+                            @Html.Action("_HouseholdView", "Households")
+                            <li><a href="@Url.Action("Index", "Budgets")">Projected Spending</a></li>
+                        }
                     </ul>
                     <div class="clearfix"> </div>
                 </div>
@@ -67,7 +62,7 @@
     <br />
     <br />
     <div class="w3_agile-copyright text-center">
-        <p>© 2017 E-Banking. All rights reserved | Design by <a href="//w3layouts.com/">W3layouts</a></p>
+        <p>© 2018 John Mahoney Design by W3layouts</p>
     </div>
 
     @Scripts.Render("~/bundles/jquery")

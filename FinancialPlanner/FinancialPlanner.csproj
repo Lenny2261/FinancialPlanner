@@ -202,6 +202,7 @@
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HouseholdsController.cs" />
+    <Compile Include="Controllers\JoinNotificationsController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SubCategoriesController.cs" />
     <Compile Include="Controllers\TransactionsController.cs" />
@@ -377,6 +378,12 @@
     <Content Include="Views\TransactionTypes\Details.cshtml" />
     <Content Include="Views\TransactionTypes\Edit.cshtml" />
     <Content Include="Views\TransactionTypes\Index.cshtml" />
+    <Content Include="Views\JoinNotifications\Create.cshtml" />
+    <Content Include="Views\JoinNotifications\Delete.cshtml" />
+    <Content Include="Views\JoinNotifications\Details.cshtml" />
+    <Content Include="Views\JoinNotifications\Edit.cshtml" />
+    <Content Include="Views\JoinNotifications\Index.cshtml" />
+    <Content Include="Views\Shared\_HouseholdView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

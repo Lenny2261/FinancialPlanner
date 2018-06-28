@@ -7,118 +7,117 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using FinancialPlanner.Models;
-using Microsoft.AspNet.Identity;
 
 namespace FinancialPlanner.Controllers
 {
-    public class HouseholdsController : Controller
+    public class JoinNotificationsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: Households
+        // GET: JoinNotifications
         public ActionResult Index()
         {
-            return View(db.households.ToList());
+            var joinNotifications = db.joinNotifications.Include(j => j.Household);
+            return View(joinNotifications.ToList());
         }
 
-        // GET: Households/Details/5
+        // GET: JoinNotifications/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Household household = db.households.Find(id);
-            if (household == null)
+            JoinNotifications joinNotifications = db.joinNotifications.Find(id);
+            if (joinNotifications == null)
             {
                 return HttpNotFound();
             }
-            return View(household);
+            return View(joinNotifications);
         }
 
-        // GET: Households/Create
+        // GET: JoinNotifications/Create
         public ActionResult Create()
         {
+            ViewBag.HouseholdId = new SelectList(db.households, "Id", "Name");
             return View();
         }
 
-        // POST: Households/Create
+        // POST: JoinNotifications/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name")] Household household)
+        public ActionResult Create([Bind(Include = "Id,Message,HouseholdId,UserId")] JoinNotifications joinNotifications)
         {
             if (ModelState.IsValid)
             {
-                db.households.Add(household);
+                db.joinNotifications.Add(joinNotifications);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(household);
+            ViewBag.HouseholdId = new SelectList(db.households, "Id", "Name", joinNotifications.HouseholdId);
+            return View(joinNotifications);
         }
 
-        // GET: Households/Edit/5
+        // GET: JoinNotifications/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Household household = db.households.Find(id);
-            if (household == null)
+            JoinNotifications joinNotifications = db.joinNotifications.Find(id);
+            if (joinNotifications == null)
             {
                 return HttpNotFound();
             }
-            return View(household);
+            ViewBag.HouseholdId = new SelectList(db.households, "Id", "Name", joinNotifications.HouseholdId);
+            return View(joinNotifications);
         }
 
-        // POST: Households/Edit/5
+        // POST: JoinNotifications/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name")] Household household)
+        public ActionResult Edit([Bind(Include = "Id,Message,HouseholdId,UserId")] JoinNotifications joinNotifications)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(household).State = EntityState.Modified;
+                db.Entry(joinNotifications).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(household);
+            ViewBag.HouseholdId = new SelectList(db.households, "Id", "Name", joinNotifications.HouseholdId);
+            return View(joinNotifications);
         }
 
-        // GET: Households/Delete/5
+        // GET: JoinNotifications/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Household household = db.households.Find(id);
-            if (household == null)
+            JoinNotifications joinNotifications = db.joinNotifications.Find(id);
+            if (joinNotifications == null)
             {
                 return HttpNotFound();
             }
-            return View(household);
+            return View(joinNotifications);
         }
 
-        // POST: Households/Delete/5
+        // POST: JoinNotifications/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Household household = db.households.Find(id);
-            db.households.Remove(household);
+            JoinNotifications joinNotifications = db.joinNotifications.Find(id);
+            db.joinNotifications.Remove(joinNotifications);
             db.SaveChanges();
             return RedirectToAction("Index");
-        }
-
-        public ActionResult _HouseholdView()
-        {
-            return View(db.Users.Find(User.Identity.GetUserId()));
         }
 
         protected override void Dispose(bool disposing)
