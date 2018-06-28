@@ -11,24 +11,29 @@ using Microsoft.AspNet.Identity;
 
 namespace FinancialPlanner.Controllers
 {
+
     public class HouseholdsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Households
+        [Authorize]
         public ActionResult Index()
         {
             return View(db.households.ToList());
         }
 
         // GET: Households/Details/5
+        [Authorize]
         public ActionResult Details(int? id)
         {
-            if (id == null)
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (id == null && currentUser.HouseholdId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Household household = db.households.Find(id);
+            Household household = db.households.Find(currentUser.HouseholdId);
             if (household == null)
             {
                 return HttpNotFound();
@@ -37,6 +42,7 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: Households/Create
+        [Authorize]
         public ActionResult Create()
         {
             return View();
@@ -46,20 +52,47 @@ namespace FinancialPlanner.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name")] Household household)
         {
             if (ModelState.IsValid)
             {
+
+                var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+                if(currentUser.HouseholdId != null)
+                {
+                    TempData["JoiningHouse"] = household.Id;
+                    TempData["InHouse"] = "Yes";
+                    return RedirectToAction("Create", "Households");
+                }
+
                 db.households.Add(household);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", "Households", new { household.Id });
             }
 
             return View(household);
         }
 
+        public ActionResult LeaveJoin()
+        {
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (TempData["JoiningHouse"] == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+
+            currentUser.HouseholdId = (int)TempData["JoiningHouse"];
+            db.SaveChanges();
+            return RedirectToAction("Details", "Clubs", new { id = currentUser.HouseholdId });
+        }
+
         // GET: Households/Edit/5
+        [Authorize]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -78,6 +111,7 @@ namespace FinancialPlanner.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name")] Household household)
         {
@@ -91,6 +125,7 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: Households/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -107,6 +142,7 @@ namespace FinancialPlanner.Controllers
 
         // POST: Households/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {

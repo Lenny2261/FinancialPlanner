@@ -45,6 +45,7 @@
                         {
                             <li><a href="@Url.Action("Index", "Home")">Home</a></li>
                             <li><a href="@Url.Action("Index", "JoinNotifications")">Invites</a></li>
+                            <li><a href="@Url.Action("Create", "Households")">Create Household</a></li>
                             @Html.Action("_HouseholdView", "Households")
                             <li><a href="@Url.Action("Index", "Budgets")">Projected Spending</a></li>
                         }
@@ -70,6 +71,7 @@
     <script src="~/js/SmoothScroll.min.js"></script>
     <script type="text/javascript" src="js/move-top.js"></script>
     <script type="text/javascript" src="js/easing.js"></script>
+    @Scripts.Render("https://unpkg.com/sweetalert2@7.21.1/dist/sweetalert2.all.js")
     <script type="text/javascript">
         $(document).ready(function () {
             /*

@@ -208,6 +208,7 @@
     <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="Controllers\TransactionStatusController.cs" />
     <Compile Include="Controllers\TransactionTypesController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -384,6 +385,7 @@
     <Content Include="Views\JoinNotifications\Edit.cshtml" />
     <Content Include="Views\JoinNotifications\Index.cshtml" />
     <Content Include="Views\Shared\_HouseholdView.cshtml" />
+    <Content Include="Views\Users\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
