@@ -1,2 +1,67 @@
 ﻿@model ICollection<FinancialPlanner.Models.ApplicationUser>
 
+<h2>Members</h2>
+<br />
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Current Household
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var member in Model)
+        {
+            <tr>
+                <td>
+                    @member.FirstName @member.LastName
+                </td>
+                <td>
+                    @if (member.HouseholdId != null)
+                    {
+                        @member.Household.Name
+                    }
+                    else
+                    {
+                        @:No Household
+                    }
+                </td>
+                <td>
+                    <a href="@Url.Action("Create", "JoinNotifications", new { inviteId = member.Id })" class="btn btn-info">Invite</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts{
+    <script>
+        $('.table').DataTable();
+    </script>
+
+    <script>
+        var check = '@TempData["NotInHouse"]';
+        if (check == "Yes") {
+            swal({
+                type: 'error',
+                title: 'Oops...',
+                text: "You cannot invite people if you are not in a household!",
+            })
+        }
+
+        var check = '@TempData["AlreadySent"]';
+        if (check == "Yes") {
+            swal({
+                type: 'error',
+                title: 'Oops...',
+                text: "You have already sent an invite to that person!",
+            })
+        }
+    </script>
+}

@@ -7,9 +7,11 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using FinancialPlanner.Models;
+using Microsoft.AspNet.Identity;
 
 namespace FinancialPlanner.Controllers
 {
+    [Authorize]
     public class JoinNotificationsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -17,8 +19,9 @@ namespace FinancialPlanner.Controllers
         // GET: JoinNotifications
         public ActionResult Index()
         {
+            string userId = User.Identity.GetUserId();
             var joinNotifications = db.joinNotifications.Include(j => j.Household);
-            return View(joinNotifications.ToList());
+            return View(joinNotifications.Where(j => j.UserId == userId).Where(j => j.seen == false).ToList());
         }
 
         // GET: JoinNotifications/Details/5
@@ -37,31 +40,31 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: JoinNotifications/Create
-        public ActionResult Create()
+        public ActionResult Create(JoinNotifications joinNotifications, string inviteId)
         {
-            ViewBag.HouseholdId = new SelectList(db.households, "Id", "Name");
-            return View();
-        }
+            var sendingUser = db.Users.Find(User.Identity.GetUserId());
 
-        // POST: JoinNotifications/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Message,HouseholdId,UserId")] JoinNotifications joinNotifications)
-        {
-            if (ModelState.IsValid)
+            if (sendingUser.HouseholdId == null)
             {
-                db.joinNotifications.Add(joinNotifications);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                TempData["NotInHouse"] = "Yes";
+                return RedirectToAction("Index", "Users");
             }
 
-            ViewBag.HouseholdId = new SelectList(db.households, "Id", "Name", joinNotifications.HouseholdId);
-            return View(joinNotifications);
+            if (db.joinNotifications.Select(n => n.UserId).Contains(inviteId) == true && db.joinNotifications.Select(n => n.HouseholdId).Contains((int)sendingUser.HouseholdId) == true)
+            {
+                TempData["AlreadySent"] = "Yes";
+                return RedirectToAction("Index", "Users");
+            }
+
+            joinNotifications.HouseholdId = (int)sendingUser.HouseholdId;
+            joinNotifications.UserId = inviteId;
+            joinNotifications.Message = sendingUser.FirstName + " " + sendingUser.LastName + " has sent you a invite to join their Household";
+            joinNotifications.seen = false;
+            db.joinNotifications.Add(joinNotifications);
+            db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
-        // GET: JoinNotifications/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)

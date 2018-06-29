@@ -68,6 +68,7 @@ namespace FinancialPlanner.Controllers
                     return RedirectToAction("Create", "Households");
                 }
 
+                currentUser.HouseholdId = household.Id;
                 db.households.Add(household);
                 db.SaveChanges();
                 return RedirectToAction("Details", "Households", new { household.Id });
@@ -84,7 +85,6 @@ namespace FinancialPlanner.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
 
             currentUser.HouseholdId = (int)TempData["JoiningHouse"];
             db.SaveChanges();
