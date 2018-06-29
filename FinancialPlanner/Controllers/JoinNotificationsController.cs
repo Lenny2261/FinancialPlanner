@@ -50,7 +50,7 @@ namespace FinancialPlanner.Controllers
                 return RedirectToAction("Index", "Users");
             }
 
-            if (db.joinNotifications.Select(n => n.UserId).Contains(inviteId) == true && db.joinNotifications.Select(n => n.HouseholdId).Contains((int)sendingUser.HouseholdId) == true)
+            if (db.joinNotifications.Where(j => j.seen == false).Select(n => n.UserId).Contains(inviteId) == true && db.joinNotifications.Where(j => j.seen == false).Select(n => n.HouseholdId).Contains((int)sendingUser.HouseholdId) == true)
             {
                 TempData["AlreadySent"] = "Yes";
                 return RedirectToAction("Index", "Users");

@@ -28,8 +28,8 @@
                     @Html.DisplayFor(modelItem => item.Message)
                 </td>
                 <td>
-                    <a href="@Url.Action("Accept", "Users")" class="btn btn-info">Accept</a>
-                    <a href="@Url.Action("Reject", "Users")" class="btn btn-info">Reject</a>
+                    <a href="@Url.Action("Accept", "Users", new { houseId = item.HouseholdId, Id = item.Id })" class="btn btn-info">Accept</a>
+                    <a href="@Url.Action("Reject", "Users", new { Id = item.Id })" class="btn btn-info">Reject</a>
                 </td>
             </tr>
         }
@@ -41,4 +41,30 @@
     <script>
         $('.table').DataTable();
     </script>
+
+    <script type="text/javascript">
+
+    var inClub = '@TempData["InHouse"]';
+
+    if (inClub == "Yes") {
+        const swalWithBootstrapButtons = swal.mixin({
+            confirmButtonClass: 'btn btn-success swal-club',
+            cancelButtonClass: 'btn btn-danger',
+            buttonsStyling: false,
+        })
+
+        swalWithBootstrapButtons({
+            title: 'Leave current household?',
+            text: "Do you want to leave your current household?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<a href="@Url.Action("LeaveJoin", "Users")" class="swal-club">Yes, leave!</a>',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        })
     }
+    else {
+
+    }
+    </script>
+}

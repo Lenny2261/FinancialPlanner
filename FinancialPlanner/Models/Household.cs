@@ -17,7 +17,7 @@ namespace FinancialPlanner.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public ICollection<ApplicationUser> applicationUsers { get; set; }
-        public ICollection<Account> accounts { get; set; }
+        public virtual ICollection<ApplicationUser> applicationUsers { get; set; }
+        public virtual ICollection<Account> accounts { get; set; }
     }
 }

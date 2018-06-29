@@ -20,6 +20,12 @@ namespace FinancialPlanner.Models
         public IList<AuthenticationDescription> OtherLogins { get; set; }
     }
 
+    public class EditName
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+    }
+
     public class FactorViewModel
     {
         public string Purpose { get; set; }

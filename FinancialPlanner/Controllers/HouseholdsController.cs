@@ -88,7 +88,7 @@ namespace FinancialPlanner.Controllers
 
             currentUser.HouseholdId = (int)TempData["JoiningHouse"];
             db.SaveChanges();
-            return RedirectToAction("Details", "Clubs", new { id = currentUser.HouseholdId });
+            return RedirectToAction("Details", "Households", new { id = currentUser.HouseholdId });
         }
 
         // GET: Households/Edit/5
