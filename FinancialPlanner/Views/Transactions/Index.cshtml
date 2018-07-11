@@ -1,75 +1,70 @@
-﻿@model IEnumerable<FinancialPlanner.Models.Transaction>
+﻿@model FinancialPlanner.Models.TransactionViewModel
 
 @{
     ViewBag.Title = "Index";
 }
-
-<h2>Index</h2>
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+<div class="row">
+    <div class="col-md-6">
+        <h2>Transactions for @Model.account.Name</h2>
+    </div>
+    <div class="col-6-md">
+        <a class="btn btn-info" href="@Url.Action("Create", "Transactions", new { id = Model.account.Id })">Add Transaction</a>
+    </div>
+</div>
+<br />
+<br />
 <table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Account.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.SubCategory.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.TransactionStatus.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.TransactionType.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Description)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.From)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Amount)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Account.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.SubCategory.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.TransactionStatus.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.TransactionType.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Description)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.From)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Amount)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
-
+    <thead>
+        <tr>
+            <th>
+                Category
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                From
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                Amount
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.transactions)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubCategory.Category.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionStatus.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionType.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.From)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>

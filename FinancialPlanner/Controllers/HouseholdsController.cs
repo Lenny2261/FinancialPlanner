@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using FinancialPlanner.Models;
 using Microsoft.AspNet.Identity;
+using FinancialPlanner.Helpers;
 
 namespace FinancialPlanner.Controllers
 {
@@ -58,16 +59,27 @@ namespace FinancialPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
-
+                var role = new RoleHelper();
                 var currentUser = db.Users.Find(User.Identity.GetUserId());
 
                 if(currentUser.HouseholdId != null)
                 {
+
+                    if (User.IsInRole("Head"))
+                    {
+                        TempData["InHouse"] = "Head";
+                        return RedirectToAction("Create", "Households");
+                    }
+
                     TempData["JoiningHouse"] = household.Id;
                     TempData["InHouse"] = "Yes";
                     return RedirectToAction("Create", "Households");
                 }
 
+                if(!User.IsInRole("Admin"))
+                {
+                    role.AddUserToRole(User.Identity.GetUserId(), "Head");
+                }
                 currentUser.HouseholdId = household.Id;
                 db.households.Add(household);
                 db.SaveChanges();

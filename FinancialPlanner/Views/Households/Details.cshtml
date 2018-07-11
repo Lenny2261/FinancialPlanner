@@ -10,19 +10,58 @@
             <h2>@Html.DisplayFor(model => model.Name)</h2>
         </div>
         <div class="col-md-6">
-            <a class="btn btn-info" href="@Url.Action("Index", "Users")">Invite Members</a>
+            @if (User.IsInRole("Admin") || User.IsInRole("Head"))
+            {
+                <a class="btn btn-info" href="@Url.Action("Index", "Users")">Invite Members</a>
+                <a class="btn btn-info" href="@Url.Action("Create", "Accounts")">Add Accounts</a>
+            }
         </div>
     </div>
     <br />
     <br />
     <div class="row">
         <div class="col-md-6">
-
+            <h3>Accounts</h3>
+            <br />
+            @foreach (var account in Model.accounts)
+            {
+            <div class="box">
+                <div>
+                    <h4>@account.Name</h4>
+                </div>
+                <h5>Type: @account.AccountType.Name</h5>
+                @if (User.IsInRole("Head") || User.IsInRole("Admin"))
+                {
+                    <a href="@Url.Action("Edit", "Accounts", new { id = account.Id })">Edit</a>
+                    <a href="@Url.Action("Delete", "Accounts", new { id = account.Id })">Delete</a>
+                    <br />
+                }
+                <br />
+                <h5>Balance: $@account.CurrentBalance</h5>
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <a class="btn btn-info" href="@Url.Action("Index", "Transactions", new { id = account.Id })">Transactions</a>
+                    </div>
+                    <div class="col-md-6">
+                        @if (account.BudgetId == null)
+                        {
+                            <a class="btn btn-info" href="@Url.Action("Create", "Budgets")">Create Spending Plan</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-info" href="@Url.Action("Details", "Budgets", new { id = account.BudgetId })">Spending Plan</a>
+                        }
+                    </div>
+                </div>
+            </div>
+                <br />
+            }
         </div>
         <div class="col-md-6">
             <h3>Members of Household</h3>
             <br />
-            @foreach(var member in Model.applicationUsers)
+            @foreach (var member in Model.applicationUsers)
             {
                 <h5>@member.FirstName @member.LastName</h5>
                 <br />

@@ -24,6 +24,11 @@ namespace FinancialPlanner.Migrations
                 roleManager.Create(new IdentityRole { Name = "Admin" });
             }
 
+            if (!context.Roles.Any(r => r.Name == "Head"))
+            {
+                roleManager.Create(new IdentityRole { Name = "Head" });
+            }
+
 
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
 
@@ -63,16 +68,21 @@ namespace FinancialPlanner.Migrations
                 }, "password");
             }
 
-            context.accountTypes.AddOrUpdate(
-                new AccountType
-                {
-                    Name = "Checkings"
-                },
-                new AccountType
-                {
-                    Name = "Savings"
-                }
-            );
+            if (!context.transactionTypes.Any(t => t.Name == "Checkings"))
+            {
+                context.accountTypes.AddOrUpdate(
+                    new AccountType
+                    {
+                        Id = 1,
+                        Name = "Checkings"
+                    },
+                    new AccountType
+                    {
+                        Id = 2,
+                        Name = "Savings"
+                    }
+                );
+            }
 
             context.categories.AddOrUpdate(
                 new Categories
@@ -92,85 +102,103 @@ namespace FinancialPlanner.Migrations
                 }
              );
 
-            context.subCategories.AddOrUpdate(
-                new SubCategories
-                {
-                    Name = "Water Bill",
-                    CategoryId = 1
-                },
-                new SubCategories
-                {
-                    Name = "Power Bill",
-                    CategoryId = 1
-                },
-                new SubCategories
-                {
-                    Name = "Phone Bill",
-                    CategoryId = 1
-                },
-                new SubCategories
-                {
-                    Name = "Internet Bill",
-                    CategoryId = 1
-                },
-                new SubCategories
-                {
-                    Name = "Gas Bill",
-                    CategoryId = 1
-                },
-                new SubCategories
-                {
-                    Name = "Car Maintainence",
-                    CategoryId = 1
-                },
-                new SubCategories
-                {
-                    Name = "Grocery Shopping",
-                    CategoryId = 2
-                },
-                new SubCategories
-                {
-                    Name = "Car Gas",
-                    CategoryId = 2
-                },
-                new SubCategories
-                {
-                    Name = "Eating Out",
-                    CategoryId = 3
-                },
-                new SubCategories
-                {
-                    Name = "Vacation",
-                    CategoryId = 3
-                },
-                new SubCategories
-                {
-                    Name = "Misc.",
-                    CategoryId = 3
-                }
-             );
+            if (!context.subCategories.Any(s => s.Name == "Water Bill"))
+            {
+                context.subCategories.AddOrUpdate(
+                    new SubCategories
+                    {
+                        Name = "Water Bill",
+                        CategoryId = 1
+                    },
+                    new SubCategories
+                    {
+                        Name = "Power Bill",
+                        CategoryId = 1
+                    },
+                    new SubCategories
+                    {
+                        Name = "Phone Bill",
+                        CategoryId = 1
+                    },
+                    new SubCategories
+                    {
+                        Name = "Internet Bill",
+                        CategoryId = 1
+                    },
+                    new SubCategories
+                    {
+                        Name = "Gas Bill",
+                        CategoryId = 1
+                    },
+                    new SubCategories
+                    {
+                        Name = "Car Maintainence",
+                        CategoryId = 1
+                    },
+                    new SubCategories
+                    {
+                        Name = "Grocery Shopping",
+                        CategoryId = 2
+                    },
+                    new SubCategories
+                    {
+                        Name = "Car Gas",
+                        CategoryId = 2
+                    },
+                    new SubCategories
+                    {
+                        Name = "Eating Out",
+                        CategoryId = 3
+                    },
+                    new SubCategories
+                    {
+                        Name = "Vacation",
+                        CategoryId = 3
+                    },
+                    new SubCategories
+                    {
+                        Name = "Misc.",
+                        CategoryId = 3
+                    }
+                 );
+            }
 
-            context.transactionStatuses.AddOrUpdate(
-                new TransactionStatus
-                {
-                    Name = "Pending"
-                },
-                new TransactionStatus
-                {
-                    Name = "Posted"
-                }
-            );
+            if (!context.transactionStatuses.Any(t => t.Name == "Posted"))
+            {
+                context.transactionStatuses.AddOrUpdate(
+                    new TransactionStatus
+                    {
+                        Id = 1,
+                        Name = "Pending"
+                    },
+                    new TransactionStatus
+                    {
+                        Id = 2,
+                        Name = "Posted"
+                    },
+                    new TransactionStatus
+                    {
+                        Id = 3,
+                        Name = "Void"
+                    }
+                );
+            }
 
-            context.transactionTypes.AddOrUpdate(
-                new TransactionType
-                {
-                    Name = "Checkings"
-                },
-                new TransactionType
-                {
-                    Name = "Savings"
-                }
-             );
+            if (!context.transactionTypes.Any(t => t.Name == "Checkings"))
+            {
+                context.transactionTypes.AddOrUpdate(
+                    new TransactionType
+                    {
+                        Id = 1,
+                        Name = "Checkings"
+                    },
+                    new TransactionType
+                    {
+                        Id = 2,
+                        Name = "Savings"
+                    }
+                 );
+            }
 
         }
     }

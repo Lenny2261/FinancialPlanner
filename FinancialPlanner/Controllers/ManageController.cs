@@ -324,7 +324,7 @@ namespace FinancialPlanner.Controllers
             return result.Succeeded ? RedirectToAction("ManageLogins") : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
         }
 
-        public ActionResult ChangeName()
+        public ActionResult ChangeNames()
         {
             var userId = User.Identity.GetUserId();
 
@@ -340,7 +340,7 @@ namespace FinancialPlanner.Controllers
         }
 
         [HttpPost]
-        public ActionResult ChangeName([Bind(Include = "FirstName,LastName")]EditName model)
+        public ActionResult ChangeNames([Bind(Include = "FirstName,LastName")]EditName model)
         {
             var userId = User.Identity.GetUserId();
 

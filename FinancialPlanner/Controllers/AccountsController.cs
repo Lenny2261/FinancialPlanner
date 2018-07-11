@@ -7,9 +7,11 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using FinancialPlanner.Models;
+using Microsoft.AspNet.Identity;
 
 namespace FinancialPlanner.Controllers
 {
+    [Authorize(Roles = "Admin,Head")]
     public class AccountsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -21,7 +23,7 @@ namespace FinancialPlanner.Controllers
             return View(accounts.ToList());
         }
 
-        // GET: Accounts/Details/5
+        [Authorize]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -54,9 +56,15 @@ namespace FinancialPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userId = User.Identity.GetUserId();
+                var currentUser = db.Users.Find(userId);
+
+                account.Created = DateTimeOffset.Now;
+                account.HouseholdId = (int)currentUser.HouseholdId;
+                account.CurrentBalance = account.Balance;
                 db.accounts.Add(account);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", "Households");
             }
 
             ViewBag.AccountTypeId = new SelectList(db.accountTypes, "Id", "Name", account.AccountTypeId);

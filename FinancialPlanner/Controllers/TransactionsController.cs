@@ -7,18 +7,27 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using FinancialPlanner.Models;
+using Microsoft.AspNet.Identity;
 
 namespace FinancialPlanner.Controllers
 {
+    [Authorize]
     public class TransactionsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Transactions
-        public ActionResult Index()
+        public ActionResult Index(int id)
         {
             var transactions = db.transactions.Include(t => t.Account).Include(t => t.SubCategory).Include(t => t.TransactionStatus).Include(t => t.TransactionType);
-            return View(transactions.ToList());
+
+            var model = new TransactionViewModel
+            {
+                account = db.accounts.Find(id),
+                transactions = transactions.Where(t => t.AccountId == id).ToList()
+            };
+
+            return View(model);
         }
 
         // GET: Transactions/Details/5
@@ -37,8 +46,10 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: Transactions/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
+            TempData["AccountId"] = id;
+
             ViewBag.AccountId = new SelectList(db.accounts, "Id", "Name");
             ViewBag.SubCategoryId = new SelectList(db.subCategories, "Id", "Name");
             ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses, "Id", "Name");
@@ -55,9 +66,17 @@ namespace FinancialPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
+                var currentUser = db.Users.Find(User.Identity.GetUserId());
+                var pendingState = db.transactionStatuses.Where(s => s.Name == "Pending").FirstOrDefault();
+                var accountBelong = db.accounts.Find((int)TempData["AccountId"]);
+                var type = db.transactionTypes.Where(t => t.Name == accountBelong.AccountType.Name).FirstOrDefault();
+
+                transaction.TransactionStatusId = pendingState.Id;
+                transaction.AccountId = accountBelong.Id;
+                transaction.TransactionTypeId = type.Id;
                 db.transactions.Add(transaction);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Transactions", new { id = accountBelong.Id });
             }
 
             ViewBag.AccountId = new SelectList(db.accounts, "Id", "Name", transaction.AccountId);

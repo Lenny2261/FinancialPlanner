@@ -16,6 +16,7 @@ namespace FinancialPlanner.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public double Balance { get; set; }
+        public double CurrentBalance { get; set; }
         public DateTimeOffset Created { get; set; }
         public decimal? InterestRate { get; set; }
         public int AccountTypeId { get; set; }
