@@ -25,6 +25,37 @@ namespace FinancialPlanner.Controllers
                 account = db.accounts.Find(id),
                 budget = db.budgets.Find(budgetId.BudgetId)
             };
+
+            DateTime current = DateTime.Now;
+            DateTime check;
+            var days = 30 - current.Day;
+            double percent = 0;
+            double total = 0;
+            if (days == -1)
+            {
+                check = current.AddDays(-30);
+            }
+            else if (current.Month == 2)
+            {
+                check = current.AddDays(-current.Day + 1);
+            }
+            else
+            {
+                check = current.AddDays(-current.Day + 1);
+            }
+            var transactions = model.account.Transactions.Where(t => t.Date > check).Where(t => t.Account.Budget.BudgetCategories.Select(b => b.CategoryId).Contains(t.SubCategory.CategoryId)).Where(t => t.TransactionType.Name == "Debit");
+
+            foreach (var item in transactions)
+            {
+                total = total + item.Amount;
+            }
+            if (total > 0)
+            {
+                percent = ((total / model.budget.Amount) * 100);
+            }
+
+            TempData["Percent"] = percent;
+
             return View(model);
         }
 

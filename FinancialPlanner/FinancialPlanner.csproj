@@ -284,6 +284,7 @@
     <Content Include="css\custom.css" />
     <Content Include="css\font-awesome.css" />
     <Content Include="css\lightbox.css" />
+    <Content Include="css\loginstyle.css" />
     <Content Include="css\style.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
@@ -299,6 +300,7 @@
     <Content Include="images\a2.jpg" />
     <Content Include="images\about.jpg" />
     <Content Include="images\banner.jpg" />
+    <Content Include="images\bg10.jpg" />
     <Content Include="images\close.png" />
     <Content Include="images\e.png" />
     <Content Include="images\g1.jpg" />

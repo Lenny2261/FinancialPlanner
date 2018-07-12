@@ -16,29 +16,37 @@
 }
 else
 {
-    DateTimeOffset check = DateTime.Now;
-    var days = 30 - check.Day;
-    double total = 0;
-    if (days == -1)
+    <br />
+    <h4>Projected spending from the last 30 days</h4>
+    <br />
+    if ((double)TempData["Percent"] > 100)
     {
-        check.AddDays(-31);
-    }
-    else if (check.Month == 2)
-    {
-        days = 28 - check.Day;
-        check.AddDays(-days);
+        <p>Overdspent</p>
+        <div class="progress">
+            <div class="progress-bar progress-bar-warning" style="width: 100%"></div>
+        </div>
     }
     else
     {
-        check.AddDays(-days);
+        <div class="progress">
+            <div class="progress-bar progress-bar-info" style="width: @TempData["Percent"]%"></div>
+        </div>
     }
-    var transactions = Model.account.Transactions.Where(t => t.Date > check).Where(t => t.Account.Budget.BudgetCategories.Select(b => b.CategoryId).Contains(t.SubCategory.CategoryId));
+    <br />
+    <h4>Spending by Category</h4>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
 
-    foreach (var item in transactions)
-    {
-        total = total + item.Amount;
-    }
-    var percent = Model.budget.Amount / total;
+        </div>
+        <div class="col-md-4">
 
-    <div class="progress-bar-info" style="width: @percent%"></div>
+        </div>
+        <div class="col-md-4">
+
+        </div>
+    </div>
 }
+
+<br />
+<br />

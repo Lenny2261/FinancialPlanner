@@ -38,10 +38,24 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: BudgetCategories/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
+            TempData["BudgetId"] = id;
+            List<Categories> less = new List<Categories>();
+            var budget = db.BudgetCategories.Where(b => b.BudgetId == id).ToList();
+            foreach(var item in budget)
+            {
+                less.Add(db.categories.Where(c => c.Id == item.CategoryId).FirstOrDefault());
+            }
             ViewBag.BudgetId = new SelectList(db.budgets, "Id", "Id");
-            ViewBag.CategoryId = new SelectList(db.categories, "Id", "Name");
+            if(less == null)
+            {
+                ViewBag.CategoryId = new SelectList(db.categories, "Id", "Name");
+            }
+            else
+            {
+                ViewBag.CategoryId = new SelectList(db.categories.Except(less), "Id", "Name");
+            }
             return View();
         }
 
@@ -54,9 +68,15 @@ namespace FinancialPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
+                var budgetId = (int)TempData["BudgetId"];
+                var budget = db.budgets.Find(budgetId);
+                var accountId = db.accounts.Where(a => a.BudgetId == budgetId).FirstOrDefault();
+
+                budget.Amount = budget.Amount + budgetCategories.AmountDedicated;
+                budgetCategories.BudgetId = budgetId;
                 db.BudgetCategories.Add(budgetCategories);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Budgets", new { accountId.Id });
             }
 
             ViewBag.BudgetId = new SelectList(db.budgets, "Id", "Id", budgetCategories.BudgetId);
