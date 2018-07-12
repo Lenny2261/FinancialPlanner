@@ -37,6 +37,7 @@
             <th>
                 Amount
             </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -58,13 +59,37 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.From)
                 </td>
+                @{
+                    var createdDate = item.Date.ToString().Split(' ');
+                }
                 <td>
-                    @Html.DisplayFor(modelItem => item.Date)
+                    @createdDate[0]
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Amount)
+                    $@Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    <a class="btn btn-info" href="@Url.Action("Edit", "Transactions", new { id = item.Id })">Edit</a>
+                    <a class="btn btn-info" href="@Url.Action("Void", "Transactions", new { id = item.Id })">Void</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script type="text/javascript">
+
+    var inClub = '@TempData["Overdraft"]';
+
+    if (inClub == "Over") {
+        swal({
+            type: 'error',
+            title: 'Oops...',
+            text: 'Your account was overdrafted from this transaction make sure you are not forgeting a transaction!',
+        })
+    }
+    </script>
+
+}
+

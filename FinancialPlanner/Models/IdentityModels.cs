@@ -48,5 +48,7 @@ namespace FinancialPlanner.Models
         public DbSet<TransactionStatus> transactionStatuses { get; set; }
         public DbSet<TransactionType> transactionTypes { get; set; }
         public DbSet<JoinNotifications> joinNotifications { get; set; }
+
+        public System.Data.Entity.DbSet<FinancialPlanner.Models.BudgetCategories> BudgetCategories { get; set; }
     }
 }

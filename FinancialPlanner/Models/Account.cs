@@ -22,6 +22,7 @@ namespace FinancialPlanner.Models
         public int AccountTypeId { get; set; }
         public int? BudgetId { get; set; }
         public int HouseholdId { get; set; }
+        public bool IsDeleted { get; set; }
 
         public virtual AccountType AccountType { get; set; }
         public virtual Budget Budget { get; set; }

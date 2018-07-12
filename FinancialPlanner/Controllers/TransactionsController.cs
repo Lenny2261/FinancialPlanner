@@ -53,7 +53,7 @@ namespace FinancialPlanner.Controllers
             ViewBag.AccountId = new SelectList(db.accounts, "Id", "Name");
             ViewBag.SubCategoryId = new SelectList(db.subCategories, "Id", "Name");
             ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses, "Id", "Name");
-            ViewBag.TransactionTypeId = new SelectList(db.transactionTypes, "Id", "Name");
+            ViewBag.TransactionTypeId = new SelectList(db.transactionTypes.Where(t => t.Name != "Void"), "Id", "Name");
             return View();
         }
 
@@ -67,14 +67,25 @@ namespace FinancialPlanner.Controllers
             if (ModelState.IsValid)
             {
                 var currentUser = db.Users.Find(User.Identity.GetUserId());
-                var pendingState = db.transactionStatuses.Where(s => s.Name == "Pending").FirstOrDefault();
                 var accountBelong = db.accounts.Find((int)TempData["AccountId"]);
-                var type = db.transactionTypes.Where(t => t.Name == accountBelong.AccountType.Name).FirstOrDefault();
+                var type = db.transactionTypes.Find(transaction.TransactionTypeId);
 
-                transaction.TransactionStatusId = pendingState.Id;
+                if(type.Name == "Debit")
+                {
+                    accountBelong.CurrentBalance = accountBelong.CurrentBalance - transaction.Amount;
+                    if(accountBelong.CurrentBalance < 0)
+                    {
+                        TempData["Overdraft"] = "Over";
+                    }
+                }
+                else if(type.Name == "Credit")
+                {
+                    accountBelong.CurrentBalance = accountBelong.CurrentBalance + transaction.Amount;
+                }
+
                 transaction.AccountId = accountBelong.Id;
-                transaction.TransactionTypeId = type.Id;
                 db.transactions.Add(transaction);
+                db.Entry(accountBelong).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index", "Transactions", new { id = accountBelong.Id });
             }
@@ -114,15 +125,104 @@ namespace FinancialPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
+                var currentAccount = db.accounts.Find((int)TempData["Account"]);
+                var currentAmount = (double)TempData["CurrentAmount"];
+                var currentType = db.transactionTypes.Find((int)TempData["Type"]);
+                var type = db.transactionTypes.Find(transaction.TransactionTypeId);
+
+                if(currentAmount != transaction.Amount)
+                {
+                    if(currentType.Name == type.Name)
+                    {
+                        if(type.Name == "Debit")
+                        {
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance + currentAmount;
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance - transaction.Amount;
+                            if (currentAccount.CurrentBalance < 0)
+                            {
+                                TempData["Overdraft"] = "Over";
+                            }
+                        }
+                        else
+                        {
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance - currentAmount;
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance + transaction.Amount;
+                        }
+                    }
+                    else
+                    {
+                        if (type.Name == "Debit")
+                        {
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance - currentAmount;
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance - transaction.Amount;
+                            if (currentAccount.CurrentBalance < 0)
+                            {
+                                TempData["Overdraft"] = "Over";
+                            }
+                        }
+                        else
+                        {
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance + currentAmount;
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance + transaction.Amount;
+                        }
+                    }
+                }
+                else
+                {
+                    if(currentType.Name != type.Name)
+                    {
+                        if (type.Name == "Debit")
+                        {
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance - currentAmount;
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance - transaction.Amount;
+                            if(currentAccount.CurrentBalance < 0)
+                            {
+                                TempData["Overdraft"] = "Over";
+                            }
+                        }
+                        else
+                        {
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance + currentAmount;
+                            currentAccount.CurrentBalance = currentAccount.CurrentBalance + transaction.Amount;
+                        }
+                    }
+                }
+
+                transaction.Id = (int)TempData["Id"];
+                transaction.AccountId = (int)TempData["Account"];
+                transaction.Date = (DateTimeOffset)TempData["Date"];
                 db.Entry(transaction).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Transactions", new { id = currentAccount.Id });
             }
             ViewBag.AccountId = new SelectList(db.accounts, "Id", "Name", transaction.AccountId);
             ViewBag.SubCategoryId = new SelectList(db.subCategories, "Id", "Name", transaction.SubCategoryId);
             ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses, "Id", "Name", transaction.TransactionStatusId);
             ViewBag.TransactionTypeId = new SelectList(db.transactionTypes, "Id", "Name", transaction.TransactionTypeId);
             return View(transaction);
+        }
+
+        public ActionResult Void(int id)
+        {
+            var transaction = db.transactions.Find(id);
+            var currentAccount = db.accounts.Find(transaction.AccountId);
+            var statusChange = db.transactionStatuses.Where(s => s.Name == "Void").FirstOrDefault();
+            var type = db.transactionTypes.Find(transaction.TransactionTypeId);
+
+            if (type.Name == "Debit")
+            {
+                currentAccount.CurrentBalance = currentAccount.CurrentBalance + transaction.Amount;
+            }
+            else
+            {
+                currentAccount.CurrentBalance = currentAccount.CurrentBalance - transaction.Amount;
+            }
+
+            transaction.TransactionStatusId = statusChange.Id;
+
+            db.Entry(transaction).State = EntityState.Modified;
+            db.SaveChanges();
+            return RedirectToAction("Index", "Transactions", new { id = transaction.AccountId });
         }
 
         // GET: Transactions/Delete/5

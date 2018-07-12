@@ -58,7 +58,14 @@ namespace FinancialPlanner.Controllers
             {
                 var userId = User.Identity.GetUserId();
                 var currentUser = db.Users.Find(userId);
+                var budget = new Budget();
 
+                var count = db.budgets.Count();
+                budget.Id = count + 1;
+                budget.Amount = 0;
+                db.budgets.Add(budget);
+
+                account.BudgetId = budget.Id;
                 account.Created = DateTimeOffset.Now;
                 account.HouseholdId = (int)currentUser.HouseholdId;
                 account.CurrentBalance = account.Balance;
@@ -100,9 +107,16 @@ namespace FinancialPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                account.Id = (int)TempData["Id"];
+                account.HouseholdId = (int)TempData["Household"];
+                account.BudgetId = (int?)TempData["Budget"];
+                account.Balance = (double)TempData["Balance"];
+                account.CurrentBalance = (double)TempData["CBalance"];
+                account.Created = (DateTimeOffset)TempData["Created"];
                 db.Entry(account).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", "Households");
             }
             ViewBag.AccountTypeId = new SelectList(db.accountTypes, "Id", "Name", account.AccountTypeId);
             ViewBag.BudgetId = new SelectList(db.budgets, "Id", "Id", account.BudgetId);

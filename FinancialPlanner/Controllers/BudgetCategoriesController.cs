@@ -10,115 +10,117 @@ using FinancialPlanner.Models;
 
 namespace FinancialPlanner.Controllers
 {
-    [Authorize(Roles = "Admin")]
-    public class BudgetsController : Controller
+    [Authorize(Roles = "Admin,Head")]
+    public class BudgetCategoriesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: Budgets
-        [Authorize]
-        public ActionResult Index(int id)
+        // GET: BudgetCategories
+        public ActionResult Index()
         {
-            var budgetId = db.accounts.Find(id);
-            var model = new BudgetViewModel
-            {
-                account = db.accounts.Find(id),
-                budget = db.budgets.Find(budgetId.BudgetId)
-            };
-            return View(model);
+            var budgetCategories = db.BudgetCategories.Include(b => b.Budget).Include(b => b.Category);
+            return View(budgetCategories.ToList());
         }
 
-        // GET: Budgets/Details/5
+        // GET: BudgetCategories/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Budget budget = db.budgets.Find(id);
-            if (budget == null)
+            BudgetCategories budgetCategories = db.BudgetCategories.Find(id);
+            if (budgetCategories == null)
             {
                 return HttpNotFound();
             }
-            return View(budget);
+            return View(budgetCategories);
         }
 
-        // GET: Budgets/Create
+        // GET: BudgetCategories/Create
         public ActionResult Create()
         {
+            ViewBag.BudgetId = new SelectList(db.budgets, "Id", "Id");
+            ViewBag.CategoryId = new SelectList(db.categories, "Id", "Name");
             return View();
         }
 
-        // POST: Budgets/Create
+        // POST: BudgetCategories/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Amount")] Budget budget)
+        public ActionResult Create([Bind(Include = "Id,CategoryId,BudgetId,AmountDedicated")] BudgetCategories budgetCategories)
         {
             if (ModelState.IsValid)
             {
-                db.budgets.Add(budget);
+                db.BudgetCategories.Add(budgetCategories);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(budget);
+            ViewBag.BudgetId = new SelectList(db.budgets, "Id", "Id", budgetCategories.BudgetId);
+            ViewBag.CategoryId = new SelectList(db.categories, "Id", "Name", budgetCategories.CategoryId);
+            return View(budgetCategories);
         }
 
-        // GET: Budgets/Edit/5
+        // GET: BudgetCategories/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Budget budget = db.budgets.Find(id);
-            if (budget == null)
+            BudgetCategories budgetCategories = db.BudgetCategories.Find(id);
+            if (budgetCategories == null)
             {
                 return HttpNotFound();
             }
-            return View(budget);
+            ViewBag.BudgetId = new SelectList(db.budgets, "Id", "Id", budgetCategories.BudgetId);
+            ViewBag.CategoryId = new SelectList(db.categories, "Id", "Name", budgetCategories.CategoryId);
+            return View(budgetCategories);
         }
 
-        // POST: Budgets/Edit/5
+        // POST: BudgetCategories/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Amount")] Budget budget)
+        public ActionResult Edit([Bind(Include = "Id,CategoryId,BudgetId,AmountDedicated")] BudgetCategories budgetCategories)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(budget).State = EntityState.Modified;
+                db.Entry(budgetCategories).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(budget);
+            ViewBag.BudgetId = new SelectList(db.budgets, "Id", "Id", budgetCategories.BudgetId);
+            ViewBag.CategoryId = new SelectList(db.categories, "Id", "Name", budgetCategories.CategoryId);
+            return View(budgetCategories);
         }
 
-        // GET: Budgets/Delete/5
+        // GET: BudgetCategories/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Budget budget = db.budgets.Find(id);
-            if (budget == null)
+            BudgetCategories budgetCategories = db.BudgetCategories.Find(id);
+            if (budgetCategories == null)
             {
                 return HttpNotFound();
             }
-            return View(budget);
+            return View(budgetCategories);
         }
 
-        // POST: Budgets/Delete/5
+        // POST: BudgetCategories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Budget budget = db.budgets.Find(id);
-            db.budgets.Remove(budget);
+            BudgetCategories budgetCategories = db.BudgetCategories.Find(id);
+            db.BudgetCategories.Remove(budgetCategories);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

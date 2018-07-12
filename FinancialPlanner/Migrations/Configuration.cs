@@ -68,18 +68,18 @@ namespace FinancialPlanner.Migrations
                 }, "password");
             }
 
-            if (!context.transactionTypes.Any(t => t.Name == "Checkings"))
+            if (!context.transactionTypes.Any(t => t.Name == "Debit"))
             {
-                context.accountTypes.AddOrUpdate(
-                    new AccountType
+                context.transactionTypes.AddOrUpdate(
+                    new TransactionType
                     {
                         Id = 1,
-                        Name = "Checkings"
+                        Name = "Debit"
                     },
-                    new AccountType
+                    new TransactionType
                     {
                         Id = 2,
-                        Name = "Savings"
+                        Name = "Credit"
                     }
                 );
             }
@@ -184,15 +184,15 @@ namespace FinancialPlanner.Migrations
                 );
             }
 
-            if (!context.transactionTypes.Any(t => t.Name == "Checkings"))
+            if (!context.accountTypes.Any(t => t.Name == "Checkings"))
             {
-                context.transactionTypes.AddOrUpdate(
-                    new TransactionType
+                context.accountTypes.AddOrUpdate(
+                    new AccountType
                     {
                         Id = 1,
                         Name = "Checkings"
                     },
-                    new TransactionType
+                    new AccountType
                     {
                         Id = 2,
                         Name = "Savings"
