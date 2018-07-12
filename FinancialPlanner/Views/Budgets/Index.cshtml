@@ -5,7 +5,7 @@
         <h2>Budget for @Model.account.Name</h2>
     </div>
     <div class="col-6-md">
-        <a class="btn btn-info" href="@Url.Action("Create", "BudgetCategories", new { id = Model.budget.Id })">Add Budget Category</a>
+        <a class="btn btn-info" href="@Url.Action("Create", "BudgetCategories", new { id = Model.budget.Id, accountId = Model.account.Id })">Add Budget Category</a>
     </div>
 </div>
 <br />

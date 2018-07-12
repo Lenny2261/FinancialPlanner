@@ -38,9 +38,10 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: BudgetCategories/Create
-        public ActionResult Create(int id)
+        public ActionResult Create(int id, int accountId)
         {
             TempData["BudgetId"] = id;
+            TempData["AccountId"] = accountId;
             List<Categories> less = new List<Categories>();
             var budget = db.BudgetCategories.Where(b => b.BudgetId == id).ToList();
             foreach(var item in budget)
@@ -54,7 +55,7 @@ namespace FinancialPlanner.Controllers
             }
             else
             {
-                ViewBag.CategoryId = new SelectList(db.categories.Except(less), "Id", "Name");
+                ViewBag.CategoryId = new SelectList(db.categories.ToList().Except(less), "Id", "Name");
             }
             return View();
         }
