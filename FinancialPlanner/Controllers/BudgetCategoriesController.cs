@@ -111,9 +111,18 @@ namespace FinancialPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
+                int budgetId = (int)TempData["BudgetId"];
+                var budget = db.budgets.Find(budgetId);
+                var accountId = db.accounts.Where(a => a.BudgetId == budgetId).FirstOrDefault();
+
+                budget.Amount = budget.Amount - (double)TempData["CurrentAmount"];
+                budget.Amount = budget.Amount + budgetCategories.AmountDedicated;
+                budgetCategories.BudgetId = budgetId;
+                budgetCategories.Id = (int)TempData["Id"];
+                budgetCategories.CategoryId = (int)TempData["CategoryId"];
                 db.Entry(budgetCategories).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Budgets", new { accountId.Id });
             }
             ViewBag.BudgetId = new SelectList(db.budgets, "Id", "Id", budgetCategories.BudgetId);
             ViewBag.CategoryId = new SelectList(db.categories, "Id", "Name", budgetCategories.CategoryId);

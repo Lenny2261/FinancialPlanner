@@ -4,9 +4,17 @@
     <div class="col-md-6">
         <h2>Budget for @Model.account.Name</h2>
     </div>
-    <div class="col-6-md">
-        <a class="btn btn-info" href="@Url.Action("Create", "BudgetCategories", new { id = Model.budget.Id, accountId = Model.account.Id })">Add Budget Category</a>
-    </div>
+    @if (Model.budget.BudgetCategories.Count() == 3)
+    {
+
+    }
+    else
+    {
+        <div class="col-6-md">
+            <a class="btn btn-info" href="@Url.Action("Create", "BudgetCategories", new { id = Model.budget.Id, accountId = Model.account.Id })">Add Budget Category</a>
+        </div>
+    }
+
 </div>
 <br />
 <br />
@@ -17,36 +25,225 @@
 else
 {
     <br />
-    <h4>Projected spending from the last 30 days</h4>
-    <br />
-    if ((double)TempData["Percent"] > 100)
-    {
-        <p>Overdspent</p>
-        <div class="progress">
-            <div class="progress-bar progress-bar-warning" style="width: 100%"></div>
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Spending from the last 30 days</h4>
+            <br />
+            @if (double.Parse((string)TempData["Percent"]) > 100)
+            {
+                <p>You have gone over your budget</p>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-warning" style="width: 100%"></div>
+                </div>
+            }
+            else
+            {
+                <div class="progress">
+                    <div data-toggle="tooltip" title="You are at @TempData["Percent"]% of @Model.budget.Amount" class="progress-bar progress-bar-info" style="width: @TempData["Percent"]%"></div>
+                </div>
+            }
         </div>
-    }
-    else
-    {
-        <div class="progress">
-            <div class="progress-bar progress-bar-info" style="width: @TempData["Percent"]%"></div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Total Spending</h4>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChart4"></canvas>
+                </div>
+            </div>
         </div>
-    }
+    </div>
     <br />
     <h4>Spending by Category</h4>
     <br />
+    <br />
     <div class="row">
-        <div class="col-md-4">
-
-        </div>
-        <div class="col-md-4">
-
-        </div>
-        <div class="col-md-4">
-
-        </div>
+        @foreach (var item in Model.budget.BudgetCategories)
+        {
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>@item.Category.Name</h4>
+                    </div>
+                    <br />
+                    <div class="card-body">
+                        <canvas id="@item.Category.Name"></canvas>
+                    </div>
+                </div>
+                <br />
+                <a class="btn btn-info" href="@Url.Action("Edit", "BudgetCategories", new { id = item.Id })">Edit</a>
+            </div>
+        }
     </div>
 }
 
 <br />
 <br />
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+    <script>
+        var ctx = document.getElementById("myChart4").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: [
+                        @TempData["Rest"],
+                        @TempData["Shop"],
+                        @TempData["Util"],
+                        @TempData["Fun"],
+                    ],
+                    backgroundColor: [
+                        '#8A2BE2',
+                        '#28a745',
+                        '#ffc107',
+                        'rgb(75, 197, 234)',
+                    ],
+                    label: 'Dataset 1'
+                }],
+                labels: [
+                    'Amount Left',
+                    'Daily Needs Spent',
+                    'Utilities Spent',
+                    'Fun Cash Spent'
+                ],
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'bottom',
+                },
+            }
+        });
+    </script>
+
+    <script>
+        var ctx = document.getElementById("Fun Cash").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Budget", "Eating Out", "Vacation", "Misc."],
+                datasets: [{
+                    label: 'Statistics',
+                    data: [@TempData["FBudget"], @TempData["SubCat9"], @TempData["SubCat10"], @TempData["SubCat11"]],
+                    borderWidth: 2,
+                    backgroundColor: 'rgb(75, 197, 234)',
+                    borderColor: 'rgb(75, 197, 234)',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#ffffff',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 150
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                        }
+                    }]
+                },
+            }
+        });
+    </script>
+
+    <script>
+        var ctx = document.getElementById("Utilities").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Budget", "Water Bill", "Power Bill", "Phone Bill", "Internet Bill", "Gas Bill", "Car Maintainence"],
+                datasets: [{
+                    label: 'Statistics',
+                    data: [@TempData["UBudget"], @TempData["SubCat1"], @TempData["SubCat2"], @TempData["SubCat3"], @TempData["SubCat4"], @TempData["SubCat5"], @TempData["SubCat6"]],
+                    borderWidth: 2,
+                    backgroundColor: '#ffc107',
+                    borderColor: '#ffc107',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#ffffff',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 150
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                        }
+                    }]
+                },
+            }
+        });
+    </script>
+
+    <script>
+        var ctx = document.getElementById("Daily Life").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Budget", "Grocery Shopping", "Car Gas"],
+                datasets: [{
+                    label: 'Statistics',
+                    data: [@TempData["DBudget"], @TempData["SubCat7"], @TempData["SubCat8"]],
+                    borderWidth: 2,
+                    backgroundColor: '#28a745',
+                    borderColor: '#28a745',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#ffffff',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 150
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                        }
+                    }]
+                },
+            }
+        });
+    </script>
+}

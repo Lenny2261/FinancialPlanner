@@ -46,11 +46,11 @@
                     <div class="col-md-6">
                         @if (account.BudgetId == null)
                         {
-                            <a class="btn btn-info" href="@Url.Action("Create", "Budgets")">Create Spending Plan</a>
+                            <a class="btn btn-info" href="@Url.Action("Create", "Budgets")">Create Budget</a>
                         }
                         else
                         {
-                            <a class="btn btn-info" href="@Url.Action("Index", "Budgets", new { id = account.Id })">Spending Plan</a>
+                            <a class="btn btn-info" href="@Url.Action("Index", "Budgets", new { id = account.Id })">Budget</a>
                         }
                     </div>
                 </div>

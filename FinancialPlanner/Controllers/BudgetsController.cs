@@ -30,7 +30,7 @@ namespace FinancialPlanner.Controllers
             DateTime check;
             var days = 30 - current.Day;
             double percent = 0;
-            double total = 0;
+            double total = 0, util = 0, fun = 0, shop = 0;
             if (days == -1)
             {
                 check = current.AddDays(-30);
@@ -43,18 +43,67 @@ namespace FinancialPlanner.Controllers
             {
                 check = current.AddDays(-current.Day + 1);
             }
-            var transactions = model.account.Transactions.Where(t => t.Date > check).Where(t => t.Account.Budget.BudgetCategories.Select(b => b.CategoryId).Contains(t.SubCategory.CategoryId)).Where(t => t.TransactionType.Name == "Debit");
+            var transactions = model.account.Transactions.Where(t => t.Date > check).Where(t => t.Account.Budget.BudgetCategories.Select(b => b.CategoryId).Contains(t.SubCategory.CategoryId)).Where(t => t.TransactionType.Name == "Debit").Where(t => t.TransactionStatus.Name != "Void");
 
             foreach (var item in transactions)
             {
                 total = total + item.Amount;
+
+                if(item.SubCategory.Category.Name == "Utilities")
+                {
+                    util = util + item.Amount;
+                }
+                else if(item.SubCategory.Category.Name == "Daily Life")
+                {
+                    shop = shop + item.Amount;
+                }
+                else
+                {
+                    fun = fun + item.Amount;
+                }
             }
             if (total > 0)
             {
                 percent = ((total / model.budget.Amount) * 100);
             }
 
-            TempData["Percent"] = percent;
+            TempData["Percent"] = percent.ToString("0.##");
+            TempData["Shop"] = shop;
+            TempData["Util"] = util;
+            TempData["Fun"] = fun;
+            TempData["Rest"] = model.budget.Amount - shop - util - fun;
+
+            int count = 1;
+
+            foreach(var item in db.subCategories)
+            {
+                TempData["SubCat" + count] = 0;
+                var subTransactions = model.account.Transactions.Where(t => t.Date > check).Where(t => t.SubCategoryId == item.Id).Where(t => t.TransactionType.Name == "Debit").Where(t => t.TransactionStatus.Name != "Void").ToList();
+                foreach(var item2 in subTransactions)
+                {
+                    var subTotal = TempData["SubCat" + count];
+                    TempData["SubCat" + count] = Convert.ToDouble(subTotal) + item2.Amount;
+                }
+                count++;
+            }
+
+            foreach(var item in model.budget.BudgetCategories)
+            {
+                switch (item.Category.Name)
+                {
+                    case ("Fun Cash"):
+                        TempData["FBudget"] = item.AmountDedicated;
+                        break;
+                    case ("Daily Life"):
+                        TempData["DBudget"] = item.AmountDedicated;
+                        break;
+                    case ("Utilities"):
+                        TempData["UBudget"] = item.AmountDedicated;
+                        break;
+                    default:
+                    break;
+                }
+            }
 
             return View(model);
         }

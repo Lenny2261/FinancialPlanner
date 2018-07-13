@@ -24,7 +24,9 @@ namespace FinancialPlanner.Controllers
             var model = new TransactionViewModel
             {
                 account = db.accounts.Find(id),
-                transactions = transactions.Where(t => t.AccountId == id).ToList()
+                debitTransactions = transactions.Where(t => t.AccountId == id).Where(t => t.TransactionType.Name == "Debit").Where(t => t.TransactionStatus.Name != "Void").ToList(),
+                creditTransactions = transactions.Where(t => t.AccountId == id).Where(t => t.TransactionType.Name == "Credit").Where(t => t.TransactionStatus.Name != "Void").ToList(),
+                voidTransactions = transactions.Where(t => t.AccountId == id).Where(t => t.TransactionStatus.Name == "Void").ToList()
             };
 
             return View(model);
@@ -216,6 +218,29 @@ namespace FinancialPlanner.Controllers
             else
             {
                 currentAccount.CurrentBalance = currentAccount.CurrentBalance - transaction.Amount;
+            }
+
+            transaction.TransactionStatusId = statusChange.Id;
+
+            db.Entry(transaction).State = EntityState.Modified;
+            db.SaveChanges();
+            return RedirectToAction("Index", "Transactions", new { id = transaction.AccountId });
+        }
+
+        public ActionResult UnVoid(int id)
+        {
+            var transaction = db.transactions.Find(id);
+            var currentAccount = db.accounts.Find(transaction.AccountId);
+            var statusChange = db.transactionStatuses.Where(s => s.Name == "Pending").FirstOrDefault();
+            var type = db.transactionTypes.Find(transaction.TransactionTypeId);
+
+            if (type.Name == "Debit")
+            {
+                currentAccount.CurrentBalance = currentAccount.CurrentBalance - transaction.Amount;
+            }
+            else
+            {
+                currentAccount.CurrentBalance = currentAccount.CurrentBalance + transaction.Amount;
             }
 
             transaction.TransactionStatusId = statusChange.Id;
