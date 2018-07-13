@@ -201,6 +201,7 @@
     <Compile Include="Controllers\BudgetCategoriesController.cs" />
     <Compile Include="Controllers\BudgetsController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HouseholdsController.cs" />
     <Compile Include="Controllers\JoinNotificationsController.cs" />
@@ -445,6 +446,9 @@
     <Content Include="Views\BudgetCategories\Details.cshtml" />
     <Content Include="Views\BudgetCategories\Edit.cshtml" />
     <Content Include="Views\BudgetCategories\Index.cshtml" />
+    <Content Include="Views\Error\Index.cshtml" />
+    <Content Include="Views\Error\NotFound.cshtml" />
+    <Content Include="Views\Error\ServerError.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

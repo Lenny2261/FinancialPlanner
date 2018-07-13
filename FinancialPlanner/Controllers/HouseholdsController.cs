@@ -116,6 +116,14 @@ namespace FinancialPlanner.Controllers
             {
                 return HttpNotFound();
             }
+
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (currentUser.HouseholdId != id)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
+
             return View(household);
         }
 
