@@ -102,12 +102,12 @@ namespace FinancialPlanner.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("NotFound", "Error");
             }
             BudgetCategories budgetCategories = db.BudgetCategories.Find(id);
             if (budgetCategories == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
 
             var currentUser = db.Users.Find(User.Identity.GetUserId());
@@ -156,12 +156,12 @@ namespace FinancialPlanner.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("NotFound", "Error");
             }
             BudgetCategories budgetCategories = db.BudgetCategories.Find(id);
             if (budgetCategories == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
             return View(budgetCategories);
         }

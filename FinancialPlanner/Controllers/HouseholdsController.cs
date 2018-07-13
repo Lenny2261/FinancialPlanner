@@ -32,12 +32,12 @@ namespace FinancialPlanner.Controllers
 
             if (id == null && currentUser.HouseholdId == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("NotFound", "Error");
             }
             Household household = db.households.Find(currentUser.HouseholdId);
             if (household == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
             return View(household);
         }
@@ -109,12 +109,12 @@ namespace FinancialPlanner.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("NotFound", "Error");
             }
             Household household = db.households.Find(id);
             if (household == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
 
             var currentUser = db.Users.Find(User.Identity.GetUserId());
