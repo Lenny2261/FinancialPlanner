@@ -45,12 +45,12 @@ namespace FinancialPlanner.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("NotFound", "Error");
             }
             Transaction transaction = db.transactions.Find(id);
             if (transaction == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
             return View(transaction);
         }
@@ -112,12 +112,12 @@ namespace FinancialPlanner.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("NotFound", "Error");
             }
             Transaction transaction = db.transactions.Find(id);
             if (transaction == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
 
             var currentUser = db.Users.Find(User.Identity.GetUserId());
@@ -283,12 +283,12 @@ namespace FinancialPlanner.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("NotFound", "Error");
             }
             Transaction transaction = db.transactions.Find(id);
             if (transaction == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
 
             var currentUser = db.Users.Find(User.Identity.GetUserId());

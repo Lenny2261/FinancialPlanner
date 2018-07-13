@@ -29,12 +29,12 @@ namespace FinancialPlanner.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("NotFound", "Error");
             }
             Account account = db.accounts.Find(id);
             if (account == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
 
             var currentUser = db.Users.Find(User.Identity.GetUserId());
@@ -94,12 +94,12 @@ namespace FinancialPlanner.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("NotFound", "Error");
             }
             Account account = db.accounts.Find(id);
             if (account == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
 
             var currentUser = db.Users.Find(User.Identity.GetUserId());
@@ -146,12 +146,12 @@ namespace FinancialPlanner.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("NotFound", "Error");
             }
             Account account = db.accounts.Find(id);
             if (account == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
 
             var currentUser = db.Users.Find(User.Identity.GetUserId());
