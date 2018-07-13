@@ -7,24 +7,30 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using FinancialPlanner.Models;
+using Microsoft.AspNet.Identity;
 
 namespace FinancialPlanner.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class BudgetsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Budgets
-        [Authorize]
         public ActionResult Index(int id)
         {
             var budgetId = db.accounts.Find(id);
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
             var model = new BudgetViewModel
             {
                 account = db.accounts.Find(id),
                 budget = db.budgets.Find(budgetId.BudgetId)
             };
+
+            if (currentUser.HouseholdId != model.account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
 
             DateTime current = DateTime.Now;
             DateTime check;
@@ -109,6 +115,7 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: Budgets/Details/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -124,6 +131,7 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: Budgets/Create
+        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             return View();
@@ -147,6 +155,7 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: Budgets/Edit/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -178,6 +187,7 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: Budgets/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int? id)
         {
             if (id == null)

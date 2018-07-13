@@ -17,6 +17,7 @@ namespace FinancialPlanner.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Accounts
+        [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             var accounts = db.accounts.Include(a => a.AccountType).Include(a => a.Budget).Include(a => a.Household);
@@ -35,6 +36,14 @@ namespace FinancialPlanner.Controllers
             {
                 return HttpNotFound();
             }
+
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (currentUser.HouseholdId != account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
+
             return View(account);
         }
 
@@ -92,6 +101,14 @@ namespace FinancialPlanner.Controllers
             {
                 return HttpNotFound();
             }
+
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (currentUser.HouseholdId != account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
+
             ViewBag.AccountTypeId = new SelectList(db.accountTypes, "Id", "Name", account.AccountTypeId);
             ViewBag.BudgetId = new SelectList(db.budgets, "Id", "Id", account.BudgetId);
             ViewBag.HouseholdId = new SelectList(db.households, "Id", "Name", account.HouseholdId);
@@ -136,6 +153,14 @@ namespace FinancialPlanner.Controllers
             {
                 return HttpNotFound();
             }
+
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (currentUser.HouseholdId != account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
+
             return View(account);
         }
 

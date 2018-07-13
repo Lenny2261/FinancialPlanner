@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using FinancialPlanner.Models;
+using Microsoft.AspNet.Identity;
 
 namespace FinancialPlanner.Controllers
 {
@@ -16,6 +17,7 @@ namespace FinancialPlanner.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: BudgetCategories
+        [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             var budgetCategories = db.BudgetCategories.Include(b => b.Budget).Include(b => b.Category);
@@ -23,6 +25,7 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: BudgetCategories/Details/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -57,6 +60,15 @@ namespace FinancialPlanner.Controllers
             {
                 ViewBag.CategoryId = new SelectList(db.categories.ToList().Except(less), "Id", "Name");
             }
+
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+            var account = db.accounts.Find(accountId);
+
+            if (currentUser.HouseholdId != account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
+
             return View();
         }
 
@@ -86,7 +98,7 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: BudgetCategories/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int? id, int? accountId)
         {
             if (id == null)
             {
@@ -97,6 +109,15 @@ namespace FinancialPlanner.Controllers
             {
                 return HttpNotFound();
             }
+
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+            var account = db.accounts.Find(accountId);
+
+            if (currentUser.HouseholdId != account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
+
             ViewBag.BudgetId = new SelectList(db.budgets, "Id", "Id", budgetCategories.BudgetId);
             ViewBag.CategoryId = new SelectList(db.categories, "Id", "Name", budgetCategories.CategoryId);
             return View(budgetCategories);
@@ -130,6 +151,7 @@ namespace FinancialPlanner.Controllers
         }
 
         // GET: BudgetCategories/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -146,6 +168,7 @@ namespace FinancialPlanner.Controllers
 
         // POST: BudgetCategories/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {

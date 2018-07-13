@@ -19,6 +19,8 @@ namespace FinancialPlanner.Controllers
         // GET: Transactions
         public ActionResult Index(int id)
         {
+
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
             var transactions = db.transactions.Include(t => t.Account).Include(t => t.SubCategory).Include(t => t.TransactionStatus).Include(t => t.TransactionType);
 
             var model = new TransactionViewModel
@@ -29,10 +31,16 @@ namespace FinancialPlanner.Controllers
                 voidTransactions = transactions.Where(t => t.AccountId == id).Where(t => t.TransactionStatus.Name == "Void").ToList()
             };
 
+            if(currentUser.HouseholdId != model.account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
+
             return View(model);
         }
 
         // GET: Transactions/Details/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -111,6 +119,14 @@ namespace FinancialPlanner.Controllers
             {
                 return HttpNotFound();
             }
+
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (currentUser.HouseholdId != transaction.Account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
+
             ViewBag.AccountId = new SelectList(db.accounts, "Id", "Name", transaction.AccountId);
             ViewBag.SubCategoryId = new SelectList(db.subCategories, "Id", "Name", transaction.SubCategoryId);
             ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses, "Id", "Name", transaction.TransactionStatusId);
@@ -210,6 +226,12 @@ namespace FinancialPlanner.Controllers
             var currentAccount = db.accounts.Find(transaction.AccountId);
             var statusChange = db.transactionStatuses.Where(s => s.Name == "Void").FirstOrDefault();
             var type = db.transactionTypes.Find(transaction.TransactionTypeId);
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (currentUser.HouseholdId != transaction.Account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
 
             if (type.Name == "Debit")
             {
@@ -233,6 +255,12 @@ namespace FinancialPlanner.Controllers
             var currentAccount = db.accounts.Find(transaction.AccountId);
             var statusChange = db.transactionStatuses.Where(s => s.Name == "Pending").FirstOrDefault();
             var type = db.transactionTypes.Find(transaction.TransactionTypeId);
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (currentUser.HouseholdId != transaction.Account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
 
             if (type.Name == "Debit")
             {
@@ -262,6 +290,14 @@ namespace FinancialPlanner.Controllers
             {
                 return HttpNotFound();
             }
+
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (currentUser.HouseholdId != transaction.Account.HouseholdId)
+            {
+                return RedirectToAction("Index", "Home", new { intent = true, malIntent = true });
+            }
+
             return View(transaction);
         }
 

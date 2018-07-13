@@ -320,6 +320,7 @@
     <Content Include="images\t3.jpg" />
     <Content Include="images\t4.jpg" />
     <Content Include="js\bootstrap.js" />
+    <Content Include="js\chart.min.js" />
     <Content Include="js\easing.js" />
     <Content Include="js\jquery-2.2.3.min.js" />
     <Content Include="js\jquery.gauge.js" />
