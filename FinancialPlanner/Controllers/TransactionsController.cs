@@ -26,9 +26,10 @@ namespace FinancialPlanner.Controllers
             var model = new TransactionViewModel
             {
                 account = db.accounts.Find(id),
-                debitTransactions = transactions.Where(t => t.AccountId == id).Where(t => t.TransactionType.Name == "Debit").Where(t => t.TransactionStatus.Name != "Void").ToList(),
-                creditTransactions = transactions.Where(t => t.AccountId == id).Where(t => t.TransactionType.Name == "Credit").Where(t => t.TransactionStatus.Name != "Void").ToList(),
-                voidTransactions = transactions.Where(t => t.AccountId == id).Where(t => t.TransactionStatus.Name == "Void").ToList()
+                allTransactions = db.transactions.Where(t => t.AccountId == id).ToList(),
+                debitTransactions = transactions.Where(t => t.AccountId == id && t.TransactionType.Name == "Debit" && t.TransactionStatus.Name != "Void").ToList(),
+                creditTransactions = transactions.Where(t => t.AccountId == id && t.TransactionType.Name == "Credit" && t.TransactionStatus.Name != "Void").ToList(),
+                voidTransactions = transactions.Where(t => t.AccountId == id && t.TransactionStatus.Name == "Void").ToList()
             };
 
             if(currentUser.HouseholdId != model.account.HouseholdId)

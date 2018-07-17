@@ -19,6 +19,8 @@ namespace FinancialPlanner.Controllers
         // GET: Budgets
         public ActionResult Index(int id)
         {
+            string[] colorArr = { "#4bc5ea", "" };
+            TempData["CatCount"] = db.categories.Count();
             var budgetId = db.accounts.Find(id);
             var currentUser = db.Users.Find(User.Identity.GetUserId());
             var model = new BudgetViewModel
@@ -74,41 +76,75 @@ namespace FinancialPlanner.Controllers
             }
 
             TempData["Percent"] = percent.ToString("0.##");
+            List<string> categoryNames = new List<string>();
+            List<double> amountSpent = new List<double>();
             TempData["Shop"] = shop;
             TempData["Util"] = util;
             TempData["Fun"] = fun;
             TempData["Rest"] = model.budget.Amount - shop - util - fun;
 
-            int count = 1;
-
-            foreach(var item in db.subCategories)
+            foreach(var item in model.budget.BudgetCategories.ToList())
             {
-                TempData["SubCat" + count] = 0;
-                var subTransactions = model.account.Transactions.Where(t => t.Date > check).Where(t => t.SubCategoryId == item.Id).Where(t => t.TransactionType.Name == "Debit").Where(t => t.TransactionStatus.Name != "Void").ToList();
-                foreach(var item2 in subTransactions)
+                categoryNames.Add(item.Category.Name);
+                double catTotal = 0;
+                TempData[item.Category.Name] = item.Category.Name;
+                TempData[item.Category.Name + "1"] = "";
+                TempData[item.Category.Name + "L"] = "";
+                TempData[item.Category.Name + "C"] = "#4bc5ea";
+
+                var subCats = db.subCategories.Where(s => s.CategoryId == item.CategoryId).ToList();
+
+                if(subCats == null)
                 {
-                    var subTotal = TempData["SubCat" + count];
-                    TempData["SubCat" + count] = Convert.ToDouble(subTotal) + item2.Amount;
+                    TempData[item.Category.Name + "1"] = (string)TempData[item.Category.Name + "1"] + item.AmountDedicated;
+                    TempData[item.Category.Name + "L"] = TempData[item.Category.Name + "L"] + "\"Budget\"";
                 }
-                count++;
+                else
+                {
+                    TempData[item.Category.Name + "1"] = (string)TempData[item.Category.Name + "1"] + item.AmountDedicated + ",";
+                    TempData[item.Category.Name + "L"] = TempData[item.Category.Name + "L"] + "\"Budget\"" + ",";
+                }
+
+                foreach(var item2 in subCats)
+                {
+                    double subTotal = 0;
+                    var subTransactions = model.account.Transactions.Where(t => t.Date > check && t.SubCategoryId == item2.Id && t.TransactionType.Name == "Debit" && t.TransactionStatus.Name != "Void").ToList();
+                    foreach(var item3 in subTransactions)
+                    {
+                        subTotal = subTotal + item3.Amount;
+                    }
+
+                    if(item2.Id == subCats.Last().Id)
+                    {
+                        TempData[item.Category.Name + "1"] = (string)TempData[item.Category.Name + "1"] + subTotal;
+                        TempData[item.Category.Name + "L"] = (string)TempData[item.Category.Name + "L"] + "\"" + item2.Name + "\"";
+                    }
+                    else
+                    {
+                        TempData[item.Category.Name + "1"] = (string)TempData[item.Category.Name + "1"] + subTotal + ",";
+                        TempData[item.Category.Name + "L"] = (string)TempData[item.Category.Name + "L"] + "\"" + item2.Name + "\",";
+                    }
+                    catTotal = catTotal + subTotal;
+                }
+                amountSpent.Add(catTotal);
             }
 
-            foreach(var item in model.budget.BudgetCategories)
+            double amountLeft = 0;
+            for (var index = 0; index < categoryNames.Count(); index++)
             {
-                switch (item.Category.Name)
-                {
-                    case ("Fun Cash"):
-                        TempData["FBudget"] = item.AmountDedicated;
-                        break;
-                    case ("Daily Life"):
-                        TempData["DBudget"] = item.AmountDedicated;
-                        break;
-                    case ("Utilities"):
-                        TempData["UBudget"] = item.AmountDedicated;
-                        break;
-                    default:
-                    break;
-                }
+                amountLeft = amountLeft + amountSpent[index];
+            }
+
+            amountLeft = model.budget.Amount - amountLeft;
+
+            TempData["PieLable"] = "\"Amount Left\",";
+            TempData["PieData"] = amountLeft + ",";
+
+            for(var index = 0; index < categoryNames.Count(); index++)
+            {
+                TempData["PieLable"] = (string)TempData["PieLable"] + "\"" + categoryNames[index] + "\",";
+                TempData["PieData"] = (string)TempData["PieData"] + amountSpent[index] + ",";
+                TempData["PieColor"] = (string)TempData["PieColor"] + "'#4bc5ea',";
             }
 
             return View(model);

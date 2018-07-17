@@ -4,7 +4,7 @@
     <div class="col-md-6">
         <h2>Budget for @Model.account.Name</h2>
     </div>
-    @if (Model.budget.BudgetCategories.Count() == 3)
+    @if (Model.budget.BudgetCategories.Count() == (int)TempData["CatCount"])
     {
 
     }
@@ -45,13 +45,13 @@ else
         </div>
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header">
-                    <h4>Total Spending</h4>
+                    <div class="card-header">
+                        <h4>Total Spending</h4>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="myChart4"></canvas>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <canvas id="myChart4"></canvas>
-                </div>
-            </div>
         </div>
     </div>
     <br />
@@ -95,24 +95,16 @@ else
             data: {
                 datasets: [{
                     data: [
-                        @TempData["Rest"],
-                        @TempData["Shop"],
-                        @TempData["Util"],
-                        @TempData["Fun"],
+                        @TempData["PieData"]
                     ],
                     backgroundColor: [
-                        '#8A2BE2',
-                        '#28a745',
-                        '#ffc107',
-                        'rgb(75, 197, 234)',
+                        '#ea4b76',
+                        @Html.Raw(TempData["PieColor"])
                     ],
                     label: 'Dataset 1'
                 }],
                 labels: [
-                    'Amount Left',
-                    'Daily Needs Spent',
-                    'Utilities Spent',
-                    'Fun Cash Spent'
+                    @Html.Raw(TempData["PieLable"])
                 ],
             },
             options: {
@@ -124,18 +116,20 @@ else
         });
     </script>
 
-    <script>
-        var ctx = document.getElementById("Fun Cash").getContext('2d');
+    @foreach (var item in Model.budget.BudgetCategories)
+    {
+        <script>
+        var ctx = document.getElementById('@TempData[item.Category.Name]').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ["Budget", "Eating Out", "Vacation", "Misc."],
+                labels: [@Html.Raw(TempData[item.Category.Name + "L"])],
                 datasets: [{
                     label: 'Statistics',
-                    data: [@TempData["FBudget"], @TempData["SubCat9"], @TempData["SubCat10"], @TempData["SubCat11"]],
+                    data: [@TempData[item.Category.Name + "1"]],
                     borderWidth: 2,
-                    backgroundColor: 'rgb(75, 197, 234)',
-                    borderColor: 'rgb(75, 197, 234)',
+                    backgroundColor: '@TempData[item.Category.Name + "C"]',
+                    borderColor: '@TempData[item.Category.Name + "C"]',
                     borderWidth: 2.5,
                     pointBackgroundColor: '#ffffff',
                     pointRadius: 4
@@ -163,87 +157,8 @@ else
                 },
             }
         });
-    </script>
+        </script>
 
-    <script>
-        var ctx = document.getElementById("Utilities").getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ["Budget", "Water Bill", "Power Bill", "Phone Bill", "Internet Bill", "Gas Bill", "Car Maintainence"],
-                datasets: [{
-                    label: 'Statistics',
-                    data: [@TempData["UBudget"], @TempData["SubCat1"], @TempData["SubCat2"], @TempData["SubCat3"], @TempData["SubCat4"], @TempData["SubCat5"], @TempData["SubCat6"]],
-                    borderWidth: 2,
-                    backgroundColor: '#ffc107',
-                    borderColor: '#ffc107',
-                    borderWidth: 2.5,
-                    pointBackgroundColor: '#ffffff',
-                    pointRadius: 4
-                }]
-            },
-            options: {
-                legend: {
-                    display: false
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            stepSize: 150
-                        }
-                    }],
-                    xAxes: [{
-                        ticks: {
-                            display: false
-                        },
-                        gridLines: {
-                            display: false
-                        }
-                    }]
-                },
-            }
-        });
-    </script>
+    }
 
-    <script>
-        var ctx = document.getElementById("Daily Life").getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ["Budget", "Grocery Shopping", "Car Gas"],
-                datasets: [{
-                    label: 'Statistics',
-                    data: [@TempData["DBudget"], @TempData["SubCat7"], @TempData["SubCat8"]],
-                    borderWidth: 2,
-                    backgroundColor: '#28a745',
-                    borderColor: '#28a745',
-                    borderWidth: 2.5,
-                    pointBackgroundColor: '#ffffff',
-                    pointRadius: 4
-                }]
-            },
-            options: {
-                legend: {
-                    display: false
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            stepSize: 150
-                        }
-                    }],
-                    xAxes: [{
-                        ticks: {
-                            display: false
-                        },
-                        gridLines: {
-                            display: false
-                        }
-                    }]
-                },
-            }
-        });
-    </script>
 }

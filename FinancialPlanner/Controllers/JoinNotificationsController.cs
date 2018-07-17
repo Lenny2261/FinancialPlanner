@@ -42,6 +42,7 @@ namespace FinancialPlanner.Controllers
         // GET: JoinNotifications/Create
         public ActionResult Create(JoinNotifications joinNotifications, string inviteId)
         {
+
             var sendingUser = db.Users.Find(User.Identity.GetUserId());
 
             if (sendingUser.HouseholdId == null)
