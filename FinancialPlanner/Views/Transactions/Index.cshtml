@@ -9,6 +9,8 @@
     </div>
     <div class="col-6-md">
         <a class="btn btn-info" href="@Url.Action("Create", "Transactions", new { id = Model.account.Id })">Add Transaction</a>
+        <a class="btn btn-info" href="@Url.Action("Create", "Categories", new { returnLoc = "Transactions", accountId = Model.account.Id })">Create Category</a>
+        <a class="btn btn-info" href="@Url.Action("Create", "SubCategories", new { returnLoc = "Transactions", accountId = Model.account.Id })">Create Sub Category</a>
     </div>
 </div>
 <br />

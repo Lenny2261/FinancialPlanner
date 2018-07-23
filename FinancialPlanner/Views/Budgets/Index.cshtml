@@ -4,17 +4,20 @@
     <div class="col-md-6">
         <h2>Budget for @Model.account.Name</h2>
     </div>
-    @if (Model.budget.BudgetCategories.Count() == (int)TempData["CatCount"])
-    {
+    <div class="col-6-md">
+        @if (Model.budget.BudgetCategories.Count() == (int)TempData["CatCount"])
+        {
 
-    }
-    else
-    {
-        <div class="col-6-md">
+        }
+        else
+        {
+
             <a class="btn btn-info" href="@Url.Action("Create", "BudgetCategories", new { id = Model.budget.Id, accountId = Model.account.Id })">Add Budget Category</a>
-        </div>
-    }
 
+        }
+        <a class="btn btn-info" href="@Url.Action("Create", "Categories", new { returnLoc = "Budgets", accountId = Model.account.Id })">Create Category</a>
+        <a class="btn btn-info" href="@Url.Action("Create", "SubCategories", new { returnLoc = "Budgets", accountId = Model.account.Id })">Create Sub Category</a>
+    </div>
 </div>
 <br />
 <br />
@@ -45,13 +48,13 @@ else
         </div>
         <div class="col-md-6">
             <div class="card">
-                    <div class="card-header">
-                        <h4>Total Spending</h4>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="myChart4"></canvas>
-                    </div>
+                <div class="card-header">
+                    <h4>Total Spending</h4>
                 </div>
+                <div class="card-body">
+                    <canvas id="myChart4"></canvas>
+                </div>
+            </div>
         </div>
     </div>
     <br />
@@ -61,7 +64,7 @@ else
     <div class="row">
         @foreach (var item in Model.budget.BudgetCategories)
         {
-            <div class="col-md-4">
+            <div class="col-md-4" style="padding-top: 15px;">
                 <div class="card">
                     <div class="card-header">
                         <h4>@item.Category.Name</h4>

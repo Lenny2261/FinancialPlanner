@@ -51,13 +51,13 @@ namespace FinancialPlanner.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,CategoryId")] SubCategories subCategories)
+        public ActionResult Create([Bind(Include = "Id,Name,CategoryId")] SubCategories subCategories, string returnLoc, int accountId)
         {
             if (ModelState.IsValid)
             {
                 db.subCategories.Add(subCategories);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", returnLoc, new { id = accountId });
             }
 
             ViewBag.CategoryId = new SelectList(db.categories, "Id", "Name", subCategories.CategoryId);

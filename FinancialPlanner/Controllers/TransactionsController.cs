@@ -63,8 +63,8 @@ namespace FinancialPlanner.Controllers
 
             ViewBag.AccountId = new SelectList(db.accounts, "Id", "Name");
             ViewBag.SubCategoryId = new SelectList(db.subCategories, "Id", "Name");
-            ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses, "Id", "Name");
-            ViewBag.TransactionTypeId = new SelectList(db.transactionTypes.Where(t => t.Name != "Void"), "Id", "Name");
+            ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses.Where(t => t.Name != "Void"), "Id", "Name");
+            ViewBag.TransactionTypeId = new SelectList(db.transactionTypes, "Id", "Name");
             return View();
         }
 
@@ -103,7 +103,7 @@ namespace FinancialPlanner.Controllers
 
             ViewBag.AccountId = new SelectList(db.accounts, "Id", "Name", transaction.AccountId);
             ViewBag.SubCategoryId = new SelectList(db.subCategories, "Id", "Name", transaction.SubCategoryId);
-            ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses, "Id", "Name", transaction.TransactionStatusId);
+            ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses.Where(t => t.Name != "Void"), "Id", "Name", transaction.TransactionStatusId);
             ViewBag.TransactionTypeId = new SelectList(db.transactionTypes, "Id", "Name", transaction.TransactionTypeId);
             return View(transaction);
         }
@@ -130,7 +130,7 @@ namespace FinancialPlanner.Controllers
 
             ViewBag.AccountId = new SelectList(db.accounts, "Id", "Name", transaction.AccountId);
             ViewBag.SubCategoryId = new SelectList(db.subCategories, "Id", "Name", transaction.SubCategoryId);
-            ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses, "Id", "Name", transaction.TransactionStatusId);
+            ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses.Where(t => t.Name != "Void"), "Id", "Name", transaction.TransactionStatusId);
             ViewBag.TransactionTypeId = new SelectList(db.transactionTypes, "Id", "Name", transaction.TransactionTypeId);
             return View(transaction);
         }
@@ -216,7 +216,7 @@ namespace FinancialPlanner.Controllers
             }
             ViewBag.AccountId = new SelectList(db.accounts, "Id", "Name", transaction.AccountId);
             ViewBag.SubCategoryId = new SelectList(db.subCategories, "Id", "Name", transaction.SubCategoryId);
-            ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses, "Id", "Name", transaction.TransactionStatusId);
+            ViewBag.TransactionStatusId = new SelectList(db.transactionStatuses.Where(t => t.Name != "Void"), "Id", "Name", transaction.TransactionStatusId);
             ViewBag.TransactionTypeId = new SelectList(db.transactionTypes, "Id", "Name", transaction.TransactionTypeId);
             return View(transaction);
         }

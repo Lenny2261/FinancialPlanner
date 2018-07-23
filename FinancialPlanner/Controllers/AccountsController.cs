@@ -78,6 +78,7 @@ namespace FinancialPlanner.Controllers
                 account.Created = DateTimeOffset.Now;
                 account.HouseholdId = (int)currentUser.HouseholdId;
                 account.CurrentBalance = account.Balance;
+                account.IsDeleted = false;
                 db.accounts.Add(account);
                 db.SaveChanges();
                 return RedirectToAction("Details", "Households");
@@ -131,6 +132,7 @@ namespace FinancialPlanner.Controllers
                 account.Balance = (double)TempData["Balance"];
                 account.CurrentBalance = (double)TempData["CBalance"];
                 account.Created = (DateTimeOffset)TempData["Created"];
+                account.IsDeleted = false;
                 db.Entry(account).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Details", "Households");
@@ -170,9 +172,9 @@ namespace FinancialPlanner.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Account account = db.accounts.Find(id);
-            db.accounts.Remove(account);
+            account.IsDeleted = true;
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("Details", "Households", new { id = account.HouseholdId });
         }
 
         protected override void Dispose(bool disposing)
