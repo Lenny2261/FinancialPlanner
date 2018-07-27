@@ -53,6 +53,11 @@ namespace FinancialPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
+                string[] colorArr = { "#8d0a7c", "#3b5657", "#6a0af8", "#8fcfe8", "#0f9ba8", "#4a40b5", "#29ab94", "#e38e61", "#6659e7", "#f63c29", "#d477b1", "#a39e81" };
+                Random rnd = new Random();
+                string color = colorArr[rnd.Next(11)];
+
+                categories.color = color;
                 db.categories.Add(categories);
                 db.SaveChanges();
                 return RedirectToAction("Index", returnLoc, new { id = accountId });

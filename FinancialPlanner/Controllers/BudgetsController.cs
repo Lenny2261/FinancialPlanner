@@ -90,7 +90,16 @@ namespace FinancialPlanner.Controllers
                 TempData[item.Category.Name] = item.Category.Name;
                 TempData[item.Category.Name + "1"] = "";
                 TempData[item.Category.Name + "L"] = "";
-                TempData[item.Category.Name + "C"] = "#4bc5ea";
+                TempData[item.Category.Name + "C"] = item.Category.color;
+
+                if(item.Id != model.budget.BudgetCategories.LastOrDefault().Id)
+                {
+                    TempData["PieColor"] = (string)TempData["PieColor"] + "\'" + item.Category.color + "\',";
+                }
+                else
+                {
+                    TempData["PieColor"] = (string)TempData["PieColor"] + "\'" + item.Category.color + "\'";
+                }
 
                 var subCats = db.subCategories.Where(s => s.CategoryId == item.CategoryId).ToList();
 
@@ -144,7 +153,6 @@ namespace FinancialPlanner.Controllers
             {
                 TempData["PieLable"] = (string)TempData["PieLable"] + "\"" + categoryNames[index] + "\",";
                 TempData["PieData"] = (string)TempData["PieData"] + amountSpent[index] + ",";
-                TempData["PieColor"] = (string)TempData["PieColor"] + "'#4bc5ea',";
             }
 
             return View(model);
